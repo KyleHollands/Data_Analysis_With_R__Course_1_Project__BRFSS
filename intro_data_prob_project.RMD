@@ -1,0 +1,117 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `brfss2013`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("brfss2013.RData")
+View(brfss2013)
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+### Insights on data collection
+- It appears the data was collected through an observational study.
+
+- The method in which this data was collected appears to make it generalizable
+to the non-institutionalized Adult population (over 18 years of age.)
+
+- The conclusions arrived at cannot be determined as causal, as random assignment
+  was not utilized.
+  
+- The observational study itself appears to follow a Stratified sampling method.
+  - Each state can be considered a strata, and within that strata, random samples
+  pertaining to the outlined requirements are completed. 
+  - For the land-line telephone survey, random households are called within the 
+  strata (state), and a randomly selected adult is interviewed. For the cellular 
+  telephone version, data is collected from an adult who resides in a private 
+  residence or college housing.
+  
+- In the data collection phase, there could be a few issues.
+  - When collecting data from each state, a random sample of the state is taken,
+  however, it's possible that the randomized sample happens to include data taken
+  from households in specific regions of the state, that are either more or less
+  wealthy. If too much data from those regions is acquired, it could easily skew 
+  the outcome of the results. To ensure a more evenly distributed set of survey
+  data is acquired, a more granular breakdown of random sampling would be needed,
+  such as multi-stage sampling of each state (strata), so all regions, rich or poor,
+  have an equal chance of being included in the survey.
+
+  - Specific state quality of life metrics could skew the overall interview results
+  if some are much lower than others. If attempting to identify trends among the
+  sample, they could end up biased.
+  
+  - Up until 2001, the data collected up to that point would not be reliable, as
+  many states were not taking part in the surveys.
+
+
+* * *
+
+## Part 2: Research questions
+
+**Research question 1:**
+
+## Is income tied to overall health?
+
+**Research question 2:**
+
+## Which states are the healthiest? (Top 5?)
+
+**Research question 3:**
+
+## What are the largest factors to good health?
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button (green button with orange arrow) above. Make sure that your code is visible
+in the project you submit. Delete this note when before you submit your work.
+
+**Research question 1:**
+
+```{r}
+
+```
+
+
+
+**Research question 2:**
+
+```{r}
+
+```
+
+
+
+**Research question 3:**
+
+```{r}
+
+```
+
