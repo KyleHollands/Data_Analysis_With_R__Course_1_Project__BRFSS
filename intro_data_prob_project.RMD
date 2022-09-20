@@ -14,6 +14,8 @@ output:
 ```{r load-packages, message = FALSE}
 library(ggplot2)
 library(dplyr)
+library(statsr)
+library(tidyr)
 ```
 
 ### Load data
@@ -24,10 +26,7 @@ your work.
 
 ```{r load-data}
 load("brfss2013.RData")
-View(brfss2013)
 ```
-
-
 
 * * *
 
@@ -63,10 +62,8 @@ to the non-institutionalized Adult population (over 18 years of age.)
   - Specific state quality of life metrics could skew the overall interview results
   if some are much lower than others. If attempting to identify trends among the
   sample, they could end up biased.
-  
   - Up until 2001, the data collected up to that point would not be reliable, as
   many states were not taking part in the surveys.
-
 
 * * *
 
@@ -74,16 +71,30 @@ to the non-institutionalized Adult population (over 18 years of age.)
 
 **Research question 1:**
 
-## Is income tied to overall health?
+## Which states are the healthiest on average?
+- Variables: genhlth, X_state
+
+- Utilizing some of the variables from the prior question, this question aims
+to determine which states on average are the healthiest based on general health.
 
 **Research question 2:**
 
-## Which states are the healthiest? (Top 5?)
+## Is there a relationship overall health, income, and education?
+- Variables: genhlth, income2, educa, sex.
+
+- This is an important and relevant question, as it may shed light on whether or
+not those that have a higher income potentially have access to better healthcare,
+nutritious food, etc. In addition to this, education level will also be taken
+int account.
 
 **Research question 3:**
 
-## What are the largest factors to good health?
+## What is the average interview completion rate by state and communication
+## device.
+- Variables: dispcode, X_state, qstver.
 
+- This question will answer which states had the highest interview completion 
+rate.
 
 * * *
 
@@ -93,10 +104,34 @@ NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk"
 button (green button with orange arrow) above. Make sure that your code is visible
 in the project you submit. Delete this note when before you submit your work.
 
+### Preliminary Data Analysis
+```{r prelim_checks, message = FALSE}
+head(brfss2013)
+tail(brfss2013)
+names(brfss2013)
+str(brfss2013)
+```
+```{r cleaning, message = FALSE}
+# Keep only relevant columns for analysis
+trimmed_brfss2013 <- brfss2013 %>%
+  select(c(X_state, genhlth, qstver, dispcode, sex, educa, income2))
+
+colnames(trimmed_brfss2013)
+
+
+# Check N/A's.
+sapply(trimmed_brfss2013, function(x) sum(is.na(x)))
+
+
+
+```
+
+
 **Research question 1:**
 
 ```{r}
-
+ggplot(brfss2013, aes(x = X_state, y = genhlth)) +
+  geom_line()
 ```
 
 
