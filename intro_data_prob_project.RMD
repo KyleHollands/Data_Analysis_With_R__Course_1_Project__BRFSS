@@ -16,6 +16,7 @@ library(ggplot2)
 library(dplyr)
 library(statsr)
 library(tidyr)
+library(ggrepel)
 ```
 
 ### Load data
@@ -37,7 +38,6 @@ load("brfss2013.RData")
 
 - The method in which this data was collected appears to make it generalizable
 to the non-institutionalized Adult population (over 18 years of age.)
-
 - The conclusions arrived at cannot be determined as causal, as random assignment
   was not utilized.
   
@@ -58,7 +58,7 @@ to the non-institutionalized Adult population (over 18 years of age.)
   data is acquired, a more granular breakdown of random sampling would be needed,
   such as multi-stage sampling of each state (strata), so all regions, rich or poor,
   have an equal chance of being included in the survey.
-
+  - There are a substantial more female interviees in the dataset than males.
   - Specific state quality of life metrics could skew the overall interview results
   if some are much lower than others. If attempting to identify trends among the
   sample, they could end up biased.
@@ -74,18 +74,19 @@ to the non-institutionalized Adult population (over 18 years of age.)
 ## Which states are the healthiest on average?
 - Variables: genhlth, X_state
 
-- Utilizing some of the variables from the prior question, this question aims
-to determine which states on average are the healthiest based on general health.
+- This surface-level question is aimed at identifying which states are the healthiest, based on the
+genhlth and X_state variables.
+- The goal is to provide a high-level indication of which states aer the healthiest, so further analysis
+can be conducted as to why that may be the case.
 
 **Research question 2:**
 
-## Is there a relationship overall health, income, and education?
+## Is there a relationship between overall health, income, and education?
 - Variables: genhlth, income2, educa, sex.
 
-- This is an important and relevant question, as it may shed light on whether or
-not those that have a higher income potentially have access to better healthcare,
-nutritious food, etc. In addition to this, education level will also be taken
-int account.
+- This question, working in conjunction with the first, is to try and answer if there is a relationship
+between an individuals income, education and overall health. This would tie in with which states are on average,
+the healthiest.
 
 **Research question 3:**
 
@@ -117,32 +118,88 @@ trimmed_brfss2013 <- brfss2013 %>%
   select(c(X_state, genhlth, qstver, dispcode, sex, educa, income2))
 
 colnames(trimmed_brfss2013)
+View(trimmed_brfss2013)
+glimpse(trimmed_brfss2013)
 
-
-# Check N/A's.
+# Check N/A's
 sapply(trimmed_brfss2013, function(x) sum(is.na(x)))
 
+# Remove rows with N/A's
+trimmed_brfss2013 <- na.omit(trimmed_brfss2013)
 
+trimmed_brfss2013 <- rename(trimmed_brfss2013,
+  state = X_state,
+  gen_hlth = genhlth,
+  int_type = qstver,
+  compl_type = dispcode,
+  sex = sex,
+  education = educa,
+  income = income2)
 
 ```
 
+```{r prelim_analysis, message = FALSE}
+# Check for biases
+table(trimmed_brfss2013$sex)
+
+# Compare sex and state
+table(trimmed_brfss2013$sex,
+trimmed_brfss2013$state)
+
+# Compare interview type and completion state
+table(trimmed_brfss2013$int_type,
+trimmed_brfss2013$compl_type)
+
+# Compare education level and income
+table(trimmed_brfss2013$education,
+trimmed_brfss2013$income)
+
+# Compare income and state
+table(trimmed_brfss2013$income,
+trimmed_brfss2013$state)
+```
 
 **Research question 1:**
 
 ```{r}
-ggplot(brfss2013, aes(x = X_state, y = genhlth)) +
-  geom_line()
+# Comparing State and General Health
+table(trimmed_brfss2013$state,
+trimmed_brfss2013$gen_hlth)
+
+trimmed_brfss2013 %>%
+  group_by(gen_hlth) %>%
+  summarise(count = n())
+
+ggplot(data = trimmed_brfss2013, aes(y = state, color = gen_hlth)) +
+  geom_bar() +
+  theme(legend.position = "bottom") +
+  labs(
+    x = "Count", y = "State",
+    title = "General Health by State",
+    subtitle = "",
+    caption = "",
+    color='General Health'
+  )
+
+  ggsave(
+  'General Health by State.png',
+  plot = last_plot(),
+  scale = 1,
+  width = 8,
+  height = 8,
+  dpi = 500,
+  limitsize = TRUE,
+  bg = NULL
+  )
+
+  
 ```
-
-
 
 **Research question 2:**
 
 ```{r}
 
 ```
-
-
 
 **Research question 3:**
 
