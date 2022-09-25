@@ -16,7 +16,6 @@ library(ggplot2)
 library(dplyr)
 library(statsr)
 library(tidyr)
-library(ggrepel)
 ```
 
 ### Load data
@@ -72,16 +71,16 @@ to the non-institutionalized Adult population (over 18 years of age.)
 **Research question 1:**
 
 ## Which states are the healthiest on average?
-- Variables: genhlth, X_state
+- Variables: genhlth, X_state, sex
 
 - This surface-level question is aimed at identifying which states are the healthiest, based on the
 genhlth and X_state variables.
-- The goal is to provide a high-level indication of which states aer the healthiest, so further analysis
+- The goal is to provide a high-level indication of which states are the healthiest, so further analysis
 can be conducted as to why that may be the case.
 
 **Research question 2:**
 
-## Is there a relationship between overall health, income, and education?
+## Is there a relationship between general health, income, education level and sex?
 - Variables: genhlth, income2, educa, sex.
 
 - This question, working in conjunction with the first, is to try and answer if there is a relationship
@@ -135,7 +134,6 @@ trimmed_brfss2013 <- rename(trimmed_brfss2013,
   sex = sex,
   education = educa,
   income = income2)
-
 ```
 
 ```{r prelim_analysis, message = FALSE}
@@ -157,7 +155,11 @@ trimmed_brfss2013$income)
 # Compare income and state
 table(trimmed_brfss2013$income,
 trimmed_brfss2013$state)
-```
+
+# Compare general health and state
+table(trimmed_brfss2013$state,
+trimmed_brfss2013$gen_hlth)
+ ```
 
 **Research question 1:**
 
@@ -168,16 +170,28 @@ trimmed_brfss2013$gen_hlth)
 
 trimmed_brfss2013 %>%
   group_by(gen_hlth) %>%
-  summarise(count = n())
+  summarise(count = n()) %>%
+  arrange(desc(count))
 
-ggplot(data = trimmed_brfss2013, aes(y = state, color = gen_hlth)) +
-  geom_bar() +
+gen_hlth_prop_all <- with(trimmed_brfss2013, table(trimmed_brfss2013$gen_hlth)) %>%
+prop.table()
+gen_hlth_prop_all
+
+gen_hlth_prop_sep <- with(trimmed_brfss2013, table(state, gen_hlth)) %>%
+prop.table(margin = 1)
+gen_hlth_prop_sep
+
+# Plot
+ggplot(data = trimmed_brfss2013, aes(y = state)) +
+  guides(col = guide_legend(reverse = FALSE)) +
+  geom_bar(data = trimmed_brfss2013, aes(color = sex)) +
+  facet_grid(. ~ gen_hlth) +
   theme(legend.position = "bottom") +
   labs(
     x = "Count", y = "State",
     title = "General Health by State",
-    subtitle = "",
-    caption = "",
+    subtitle = "2013 BRFSS Data",
+    caption = "Kyle Hollands - September 25th, 2022",
     color='General Health'
   )
 
@@ -191,14 +205,54 @@ ggplot(data = trimmed_brfss2013, aes(y = state, color = gen_hlth)) +
   limitsize = TRUE,
   bg = NULL
   )
-
-  
 ```
 
 **Research question 2:**
 
 ```{r}
+- Variables: genhlth, income2, education
 
+table(trimmed_brfss2013$income,
+trimmed_brfss2013$gen_hlth,
+trimmed_brfss2013$education)
+
+trimmed_brfss2013 %>%
+  group_by(gen_hlth, income, education) %>%
+  summarise(count = n()) %>%
+  arrange(desc(income), desc(education), gen_hlth)
+
+gen_hlth_vs_income_prop <- with(trimmed_brfss2013, table(income, gen_hlth)) %>%
+prop.table(margin = 1)
+gen_hlth_vs_income_prop
+
+gen_hlth_vs_education_prop <- with(trimmed_brfss2013, table(gen_hlth, education)) %>%
+prop.table(margin = 1)
+gen_hlth_vs_education_prop
+
+# Plot
+ggplot(data = trimmed_brfss2013, aes(y = income)) +
+  guides(col = guide_legend(reverse = FALSE)) +
+  geom_bar(data = trimmed_brfss2013, aes(color = education)) +
+  facet_grid(gen_hlth ~ .) +
+  theme(legend.position = "bottom") +
+  labs(
+    x = "Count", y = "Income",
+    title = "General Health vs Income and Education",
+    subtitle = "2013 BRFSS Data",
+    caption = "Kyle Hollands - September 25th, 2022",
+    color=""
+  )
+
+  ggsave(
+  'General Health vs Income and Education.png',
+  plot = last_plot(),
+  scale = 1,
+  width = 8,
+  height = 8,
+  dpi = 500,
+  limitsize = TRUE,
+  bg = NULL
+  )
 ```
 
 **Research question 3:**
