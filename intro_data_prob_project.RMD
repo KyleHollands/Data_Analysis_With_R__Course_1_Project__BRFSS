@@ -164,7 +164,7 @@ trimmed_brfss2013$gen_hlth)
 **Research question 1:**
 
 ```{r}
-# Comparing State and General Health
+# Comparing State and General Health and Sex
 table(trimmed_brfss2013$state,
 trimmed_brfss2013$gen_hlth)
 
@@ -183,9 +183,9 @@ gen_hlth_prop_sep
 
 # Plot
 ggplot(data = trimmed_brfss2013, aes(y = state)) +
-  guides(col = guide_legend(reverse = FALSE)) +
-  geom_bar(data = trimmed_brfss2013, aes(color = sex)) +
-  facet_grid(. ~ gen_hlth) +
+  guides(col = guide_legend(reverse = TRUE)) +
+  geom_bar(data = trimmed_brfss2013, aes(color = gen_hlth)) +
+  facet_grid(. ~ sex) +
   theme(legend.position = "bottom") +
   labs(
     x = "Count", y = "State",
@@ -210,8 +210,7 @@ ggplot(data = trimmed_brfss2013, aes(y = state)) +
 **Research question 2:**
 
 ```{r}
-- Variables: genhlth, income2, education
-
+# Comparing General Health, Income, Education and Sex.
 table(trimmed_brfss2013$income,
 trimmed_brfss2013$gen_hlth,
 trimmed_brfss2013$education)
@@ -231,13 +230,13 @@ gen_hlth_vs_education_prop
 
 # Plot
 ggplot(data = trimmed_brfss2013, aes(y = income)) +
-  guides(col = guide_legend(reverse = FALSE)) +
+  guides(col = guide_legend(reverse = TRUE)) +
   geom_bar(data = trimmed_brfss2013, aes(color = education)) +
-  facet_grid(gen_hlth ~ .) +
+  facet_grid(gen_hlth ~ sex) +
   theme(legend.position = "bottom") +
   labs(
     x = "Count", y = "Income",
-    title = "General Health vs Income and Education",
+    title = "General Health vs Income, Education and Sex",
     subtitle = "2013 BRFSS Data",
     caption = "Kyle Hollands - September 25th, 2022",
     color=""
@@ -247,10 +246,10 @@ ggplot(data = trimmed_brfss2013, aes(y = income)) +
   'General Health vs Income and Education.png',
   plot = last_plot(),
   scale = 1,
-  width = 8,
+  width = 10,
   height = 8,
   dpi = 500,
-  limitsize = TRUE,
+  limitsize = FALSE,
   bg = NULL
   )
 ```
@@ -258,6 +257,47 @@ ggplot(data = trimmed_brfss2013, aes(y = income)) +
 **Research question 3:**
 
 ```{r}
+# Comparing state, interview type and completion type
 
+table(trimmed_brfss2013$int_type,
+trimmed_brfss2013$compl_type)
+
+trimmed_brfss2013 %>%
+  group_by(compl_type, int_type) %>%
+  summarise(count = n())
+  #arrange(desc(compl_type), desc(int_type))
+
+test <- with(trimmed_brfss2013, table(trimmed_brfss2013$compl_type)) %>%
+prop.table()
+test
+
+test2 <- with(trimmed_brfss2013, table(sex, compl_type)) %>%
+prop.table(margin = 2)
+test2
+
+# Plot
+ggplot(data = trimmed_brfss2013, aes(x = compl_type)) +
+  guides(col = guide_legend(reverse = TRUE)) +
+  geom_bar(data = trimmed_brfss2013, aes(color = int_type)) +
+  facet_grid(. ~ sex) +
+  theme(legend.position = "bottom") +
+  labs(
+    x = "Completion Type", y = "# of Interviees",
+    title = "General Health vs Income, Education and Sex",
+    subtitle = "2013 BRFSS Data",
+    caption = "Kyle Hollands - September 25th, 2022",
+    color="Interview Type"
+  )
+
+ggsave(
+  'Interview Completion by type and Sex.png',
+  plot = last_plot(),
+  scale = 1,
+  width = 8,
+  height = 8,
+  dpi = 500,
+  limitsize = FALSE,
+  bg = NULL
+  )
 ```
 
