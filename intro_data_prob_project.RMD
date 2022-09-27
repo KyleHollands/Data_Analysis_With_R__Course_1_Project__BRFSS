@@ -265,15 +265,14 @@ trimmed_brfss2013$compl_type)
 trimmed_brfss2013 %>%
   group_by(compl_type, int_type) %>%
   summarise(count = n())
-  #arrange(desc(compl_type), desc(int_type))
-
-test <- with(trimmed_brfss2013, table(trimmed_brfss2013$compl_type)) %>%
+  
+compl_perc <- with(trimmed_brfss2013, table(trimmed_brfss2013$compl_type)) %>%
 prop.table()
-test
+compl_perc
 
-test2 <- with(trimmed_brfss2013, table(sex, compl_type)) %>%
+compl_perc_sex <- with(trimmed_brfss2013, table(sex, compl_type)) %>%
 prop.table(margin = 2)
-test2
+compl_perc_sex
 
 # Plot
 ggplot(data = trimmed_brfss2013, aes(x = compl_type)) +
@@ -283,7 +282,7 @@ ggplot(data = trimmed_brfss2013, aes(x = compl_type)) +
   theme(legend.position = "bottom") +
   labs(
     x = "Completion Type", y = "# of Interviees",
-    title = "General Health vs Income, Education and Sex",
+    title = "Interview Completion by type and Sex",
     subtitle = "2013 BRFSS Data",
     caption = "Kyle Hollands - September 25th, 2022",
     color="Interview Type"
