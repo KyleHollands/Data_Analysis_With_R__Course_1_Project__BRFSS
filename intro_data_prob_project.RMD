@@ -33,68 +33,52 @@ load("brfss2013.RData")
 ## Part 1: Data
 
 ### Insights on data collection
-- It appears the data was collected through an observational study.
-
-- The method in which this data was collected appears to make it generalizable
+#### Generalizability and Causality
+- The method in which this data was collected (observational study) appears to make it generalizable
 to the non-institutionalized Adult population (over 18 years of age.)
 - The conclusions arrived at cannot be determined as causal, as random assignment
   was not utilized.
-  
+
+#### Sampling Method and Potential Biases
 - The observational study itself appears to follow a Stratified sampling method.
-  - Each state can be considered a strata, and within that strata, random samples
-  pertaining to the outlined requirements are completed. 
-  - For the land-line telephone survey, random households are called within the 
-  strata (state), and a randomly selected adult is interviewed. For the cellular 
-  telephone version, data is collected from an adult who resides in a private 
-  residence or college housing.
+  - Each state can be considered a strata, and within that strata, random samples are taken.
   
 - In the data collection phase, there could be a few issues.
-  - When collecting data from each state, a random sample of the state is taken,
-  however, it's possible that the randomized sample happens to include data taken
-  from households in specific regions of the state, that are either more or less
-  wealthy. If too much data from those regions is acquired, it could easily skew 
-  the outcome of the results. To ensure a more evenly distributed set of survey
-  data is acquired, a more granular breakdown of random sampling would be needed,
-  such as multi-stage sampling of each state (strata), so all regions, rich or poor,
-  have an equal chance of being included in the survey.
+  - Bias could exist within the sampling method; more interviews may be taken in specific
+  neighborhoods that are of higher or lower income, skewing the overall results. A multi-stage sampling
+  method would likely return more consistent results.
   - There are a substantial more female interviees in the dataset than males.
-  - Specific state quality of life metrics could skew the overall interview results
-  if some are much lower than others. If attempting to identify trends among the
-  sample, they could end up biased.
-  - Up until 2001, the data collected up to that point would not be reliable, as
-  many states were not taking part in the surveys.
+  - Up until 2001, the data collected would not be reliable, as
+  many states were not taking part in the surveys at that time. It took until 2011 before data
+  from all states were being collected.
 
 * * *
 
 ## Part 2: Research questions
 
-**Research question 1:**
+### Research question 1
 
-## Which states are the healthiest on average?
-- Variables: genhlth, X_state, sex
+#### Which states are the healthiest on average?
 
 - This surface-level question is aimed at identifying which states are the healthiest, based on the
-genhlth and X_state variables.
-- The goal is to provide a high-level indication of which states are the healthiest, so further analysis
-can be conducted as to why that may be the case.
+genhlth and X_state variables. The sex variable is added to help identify if there is a gap that exists
+between males and females.
 
-**Research question 2:**
+### Research question 2
 
-## Is there a relationship between general health, income, education level and sex?
-- Variables: genhlth, income2, educa, sex.
+#### Is there a relationship between general health, income, education level and sex?
 
 - This question, working in conjunction with the first, is to try and answer if there is a relationship
 between an individuals income, education and overall health. This would tie in with which states are on average,
 the healthiest.
 
-**Research question 3:**
+### Research question 3
 
-## What is the average interview completion rate by state and communication
-## device.
-- Variables: dispcode, X_state, qstver.
+#### What is the completion rate of interviews by type and sex?
 
-- This question will answer which states had the highest interview completion 
-rate.
+- This question aims to answer which interview type had the highest completion rate. 
+The sex variable is also included to help differentiate between whether males or females
+were more likely to finish the interview or not.
 
 * * *
 
@@ -106,22 +90,23 @@ in the project you submit. Delete this note when before you submit your work.
 
 ### Preliminary Data Analysis
 ```{r prelim_checks, message = FALSE}
-head(brfss2013)
-tail(brfss2013)
-names(brfss2013)
-str(brfss2013)
+#head(brfss2013)
+#tail(brfss2013)
+#names(brfss2013)
+#str(brfss2013)
 ```
+
 ```{r cleaning, message = FALSE}
 # Keep only relevant columns for analysis
 trimmed_brfss2013 <- brfss2013 %>%
   select(c(X_state, genhlth, qstver, dispcode, sex, educa, income2))
 
-colnames(trimmed_brfss2013)
-View(trimmed_brfss2013)
-glimpse(trimmed_brfss2013)
+#colnames(trimmed_brfss2013)
+#View(trimmed_brfss2013)
+#glimpse(trimmed_brfss2013)
 
 # Check N/A's
-sapply(trimmed_brfss2013, function(x) sum(is.na(x)))
+#sapply(trimmed_brfss2013, function(x) sum(is.na(x)))
 
 # Remove rows with N/A's
 trimmed_brfss2013 <- na.omit(trimmed_brfss2013)
@@ -159,14 +144,13 @@ trimmed_brfss2013$state)
 # Compare general health and state
 table(trimmed_brfss2013$state,
 trimmed_brfss2013$gen_hlth)
- ```
+```
 
-**Research question 1:**
-
+### Research question 1
 ```{r}
 # Comparing State and General Health and Sex
-table(trimmed_brfss2013$state,
-trimmed_brfss2013$gen_hlth)
+#table(trimmed_brfss2013$state,
+#trimmed_brfss2013$gen_hlth)
 
 trimmed_brfss2013 %>%
   group_by(gen_hlth) %>%
@@ -184,15 +168,15 @@ gen_hlth_prop_sep
 # Plot
 ggplot(data = trimmed_brfss2013, aes(y = state)) +
   guides(col = guide_legend(reverse = TRUE)) +
-  geom_bar(data = trimmed_brfss2013, aes(color = gen_hlth)) +
-  facet_grid(. ~ sex) +
+  geom_bar(data = trimmed_brfss2013, aes(color = sex)) +
+  facet_grid(. ~ gen_hlth) +
   theme(legend.position = "bottom") +
   labs(
     x = "Count", y = "State",
     title = "General Health by State",
     subtitle = "2013 BRFSS Data",
     caption = "Kyle Hollands - September 25th, 2022",
-    color='General Health'
+    color='Sex'
   )
 
   ggsave(
@@ -207,13 +191,13 @@ ggplot(data = trimmed_brfss2013, aes(y = state)) +
   )
 ```
 
-**Research question 2:**
+### Research question 2
 
 ```{r}
-# Comparing General Health, Income, Education and Sex.
-table(trimmed_brfss2013$income,
-trimmed_brfss2013$gen_hlth,
-trimmed_brfss2013$education)
+# Comparing General Health, Income, Education.
+#table(trimmed_brfss2013$income,
+#trimmed_brfss2013$gen_hlth,
+#trimmed_brfss2013$education)
 
 trimmed_brfss2013 %>%
   group_by(gen_hlth, income, education) %>%
@@ -224,9 +208,9 @@ gen_hlth_vs_income_prop <- with(trimmed_brfss2013, table(income, gen_hlth)) %>%
 prop.table(margin = 1)
 gen_hlth_vs_income_prop
 
-gen_hlth_vs_education_prop <- with(trimmed_brfss2013, table(gen_hlth, education)) %>%
-prop.table(margin = 1)
-gen_hlth_vs_education_prop
+#gen_hlth_vs_education_prop <- with(trimmed_brfss2013, table(gen_hlth, education)) %>%
+#prop.table(margin = 1)
+#gen_hlth_vs_education_prop
 
 # Plot
 ggplot(data = trimmed_brfss2013, aes(y = income)) +
@@ -246,7 +230,7 @@ ggplot(data = trimmed_brfss2013, aes(y = income)) +
   'General Health vs Income and Education.png',
   plot = last_plot(),
   scale = 1,
-  width = 10,
+  width = 11,
   height = 8,
   dpi = 500,
   limitsize = FALSE,
@@ -254,17 +238,17 @@ ggplot(data = trimmed_brfss2013, aes(y = income)) +
   )
 ```
 
-**Research question 3:**
+### Research question 3
 
 ```{r}
 # Comparing state, interview type and completion type
 
-table(trimmed_brfss2013$int_type,
-trimmed_brfss2013$compl_type)
+#table(trimmed_brfss2013$int_type,
+#trimmed_brfss2013$compl_type)
 
-trimmed_brfss2013 %>%
-  group_by(compl_type, int_type) %>%
-  summarise(count = n())
+#trimmed_brfss2013 %>%
+#  group_by(compl_type, int_type) %>%
+#  summarise(count = n())
   
 compl_perc <- with(trimmed_brfss2013, table(trimmed_brfss2013$compl_type)) %>%
 prop.table()
@@ -273,6 +257,10 @@ compl_perc
 compl_perc_sex <- with(trimmed_brfss2013, table(sex, compl_type)) %>%
 prop.table(margin = 2)
 compl_perc_sex
+
+#compl_perc_state <- with(trimmed_brfss2013, table( state, compl_type)) %>%
+#prop.table(margin = 1)
+#compl_perc_state
 
 # Plot
 ggplot(data = trimmed_brfss2013, aes(x = compl_type)) +
